@@ -1,0 +1,36 @@
+                             The *.raw file format
+                               Christoph Peters
+                                  2017-01-31
+
+Some of the accompanying blue noise textures are provided in a very simplistic 
+tailor-made binary file format. You recognize them by the file format extension 
+*.raw. A complete documentation of this file format is provided below. A few 
+lines of code should suffice to load it in most programming languages. For a 
+reference implementation please take a look at StoreNDTextureHDR() and 
+LoadNDTextureHDR() in BlueNoise.py.
+
+The binary data of the files consists of nothing but a sequence of unsigned, 
+least significant bit first 32-bit integers. The contents of these integers are 
+as follows:
+
+- Version: File format version, should be 1.
+
+- nChannel: The number of color channels in the image. This should be a value 
+  between 1 (greyscale) and 4 (RGBA).
+
+- nDimension: The number of dimensions of the stored array, i.e. the number of 
+  indices required to uniquely identify one pixel, voxel, etc..
+
+- Shape[nDimension]: nDimension integers providing the size of the array along 
+  each dimension. By convention the first dimension is height, second width and 
+  third depth.
+
+- Data[Shape[0]*...*Shape[nDimension-1]*nChannel]: The uncompressed data of the 
+  texture. The channels are unrolled first, followed by all dimensions in 
+  reverse order. Thus, an RG image of size 3*2 would be stored like this:
+  00R, 00G, 01R, 01G, 10R, 10G, 11R, 11G, 20R, 20G, 21R, 21G
+  The values for blue noise textures lie between 0 and 
+  Shape[0]*...*Shape[nDimension-1]-1 and each value occurs exactly once per 
+  channel.
+
+END OF FILE
